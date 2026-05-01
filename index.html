@@ -19,7 +19,6 @@ img { background:#eee; }
 #quickOrderBox { transition: all 0.3s ease; }
 </style>
 </head>
-
 <body class="bg-gray-100 pb-20">
 
 <header class="bg-[#FF0000] text-white p-4 sticky top-0 z-50 flex justify-between items-center shadow-lg border-b-4 border-red-800">
@@ -186,6 +185,19 @@ document.getElementById("search").oninput = function(e) {
   const filtered = allProducts.filter(p => (p["Product Name"] || "").toLowerCase().includes(v));
   renderProducts(filtered);
 };
+// 🔥 Category Filter Logic
+function filterByCategory(category) {
+    if (category === 'all') {
+        renderProducts(allProducts);
+    } else {
+        const filtered = allProducts.filter(p => 
+            (p["Category"] || "").toLowerCase() === category.toLowerCase()
+        );
+        renderProducts(filtered);
+    }
+    // Screen ko thoda upar scroll kar dega filter ke baad
+    window.scrollTo({ top: 400, behavior: 'smooth' });
+}
 
 // CART (Tera original logic)
 function addToCart(p) {
@@ -330,6 +342,24 @@ loadProducts();
             <button onclick="document.getElementById('quickOrderBox').classList.add('hidden')" class="flex-1 py-3 font-bold text-gray-400">CANCEL</button>
             <button onclick="confirmQuickOrder()" class="flex-1 py-3 bg-green-600 text-white font-bold rounded-xl shadow-lg border-b-4 border-green-800 active:translate-y-[2px] active:border-b-0 transition-all">CONFIRM ✅</button>
         </div>
+    </div>
+</div>
+<div class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 h-16 flex justify-around items-center z-[100] shadow-[0_-5px_15px_rgba(0,0,0,0.05)]">
+    <div class="flex flex-col items-center text-red-600 cursor-pointer">
+        <i class="fa-solid fa-house text-xl"></i>
+        <span class="text-[10px] font-bold mt-0.5 uppercase">Home</span>
+    </div>
+    <div class="flex flex-col items-center text-gray-400 cursor-pointer" onclick="alert('Categories Coming Soon!')">
+        <i class="fa-solid fa-layer-group text-xl"></i>
+        <span class="text-[10px] font-bold mt-0.5 uppercase">Categories</span>
+    </div>
+    <div class="flex flex-col items-center text-gray-400 cursor-pointer" onclick="openOrder()">
+        <i class="fa-solid fa-truck-fast text-xl"></i>
+        <span class="text-[10px] font-bold mt-0.5 uppercase">Orders</span>
+    </div>
+    <div class="flex flex-col items-center text-gray-400 cursor-pointer">
+        <i class="fa-solid fa-user text-xl"></i>
+        <span class="text-[10px] font-bold mt-0.5 uppercase">Account</span>
     </div>
 </div>
 
