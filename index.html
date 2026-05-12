@@ -155,35 +155,31 @@ async function loadProducts() {
     renderProducts(allProducts);
   } catch(e) { alert("❌ Load Error"); }
 }
-
+  
 function renderProducts(list) {
     let html = "";
     list.forEach(p => {
-        // IMAGE LINK FIX: Hum 'p.Image' check kar rahe hain jo ki image display karega, link nahi.
+        // Image Fix: Column name 'Image' ya 'Image URL' dono check karega
         const img = p.Image || p["Image URL"] || 'https://via.placeholder.com/150';
         const name = p["Product Name"] || p.Name || "No Name";
         const price = p.Price || 0;
-        const mrp = p.MRP || (Number(price) + 100);
 
         html += `
-        <div class="bg-white p-2 rounded-2xl shadow-md flex flex-col border border-gray-100">
-          <img src="${img}" class="h-28 w-full object-cover rounded-xl" onerror="this.src='https://via.placeholder.com/150?text=No+Image'">
+        <div class="bg-white p-2 rounded-2xl shadow-md border border-gray-100">
+          <img src="${img}" class="h-32 w-full object-cover rounded-xl" onerror="this.src='https://via.placeholder.com/150'">
           <div class="flex text-[#FFD700] text-[8px] mt-1">
-              <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i>
+              <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
           </div>
           <h3 class="text-[11px] font-bold mt-1 truncate">${name}</h3>
-          <div class="flex gap-2 items-center">
-              <p class="text-red-600 font-black text-sm">₹${price}</p>
-              <p class="text-gray-400 line-through text-[10px]">₹${mrp}</p>
-          </div>
-          <div class="grid grid-cols-2 gap-1 mt-2">
-              <button onclick='addToCart(${JSON.stringify(p)})' class="bg-gray-100 text-black text-[10px] p-2 rounded-lg font-bold shadow-sm">+ Cart</button>
-              <button onclick='openQuickOrder(${JSON.stringify(p)})' class="bg-[#FFD700] text-black text-[10px] p-2 rounded-lg font-bold shadow-sm">BUY NOW</button>
-          </div>
+          <p class="text-red-600 font-black text-sm mb-2">₹${price}</p>
+          
+          <!-- +Cart button hata diya gaya hai -->
+          <button onclick='openQuickOrder(${JSON.stringify(p)})' class="w-full bg-[#FFD700] text-black text-[10px] py-2 rounded-lg font-black shadow-sm">BUY NOW</button>
         </div>`;
     });
     document.getElementById("products").innerHTML = html;
 }
+
 
 function searchProduct() {
   const v = document.getElementById("search").value.toLowerCase();
