@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#FF972E">
-<title>NnCart Full</title>
+<title>NnCart Full Fixed</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
@@ -143,16 +143,18 @@ let allProducts = [];
 let cart = [];  
 let currentQuickItem = null;  
 
-// 🔥 FIXED: Loads from both and merges by Barcode to avoid duplicates
+// 🔥 FIXED: Hybrid Loading with Duplicate Check by Barcode
 async function loadProducts() {  
   try {  
     let combinedData = {};
 
-    // 1. Fetch from Google Sheet
+    // 1. Fetch from Google Sheet (Priority)
     try {
         const sheetRes = await fetch(SHEET_URL + "?action=getInventory");
         const sheetItems = await sheetRes.json();
-        sheetItems.forEach(item => { combinedData[item.Barcode] = item; });
+        sheetItems.forEach(item => { 
+            if(item.Barcode) combinedData[item.Barcode] = item; 
+        });
     } catch(e) { console.log("Sheet empty or error"); }
 
     // 2. Fetch from Firebase
@@ -160,7 +162,10 @@ async function loadProducts() {
         const snap = await db.collection("products").get();
         snap.forEach(doc => {
             const data = doc.data();
-            if(!combinedData[data.Barcode]) { combinedData[data.Barcode] = data; }
+            // Agar barcode already sheet se aa gaya hai toh skip karega
+            if(data.Barcode && !combinedData[data.Barcode]) { 
+                combinedData[data.Barcode] = data; 
+            }
         });
     } catch(e) { console.log("Firebase empty or error"); }
 
@@ -173,10 +178,11 @@ function renderProducts(list) {
     let html = "";   
     const container = document.getElementById("products");  
     list.forEach(p => {  
+        // Mapping fix according to your screenshot columns
         const imgUrl = p.Image || p.image || p["Image URL"] || 'https://via.placeholder.com/150';  
         const pName = p.Name || p["Product Name"] || "No Name";  
         const price = p.Price || 0;  
-        const mrp = p.MRP || (Number(price) + 100);  
+        const mrp = p.MRP || (Number(price) + 150);  
 
         html += `  
         <div class="bg-white p-2 rounded-2xl shadow-md flex flex-col border border-gray-100">  
@@ -200,7 +206,7 @@ function renderProducts(list) {
   
 function searchProduct() {  
   const v = document.getElementById("search").value.toLowerCase();  
-  const filtered = allProducts.filter(p => (p["Product Name"] || p.Name || "").toLowerCase().includes(v));  
+  const filtered = allProducts.filter(p => (p.Name || p["Product Name"] || "").toLowerCase().includes(v));  
   renderProducts(filtered);  
 }  
   
@@ -212,8 +218,8 @@ function filterByCategory(cat) {
 function toggleCart() { document.getElementById("orderBox").classList.toggle("hidden"); }  
   
 function addToCart(p) {  
-  const name = p["Product Name"] || p.Name;  
-  const found = cart.find(i => (i["Product Name"] || i.Name) === name);  
+  const name = p.Name || p["Product Name"];  
+  const found = cart.find(i => (i.Name || i["Product Name"]) === name);  
   if(found){ found.qty += 1; } else { p.qty = 1; cart.push(p); }  
   updateCartUI();  
 }  
@@ -222,7 +228,8 @@ function updateCartUI() {
   document.getElementById("cartCount").innerText = cart.length;  
   let h = ""; let total = 0;  
   cart.forEach((item, index) => {  
-      h += `<div class="flex justify-between text-sm">${item["Product Name"] || item.Name} x${item.qty} <span>₹${item.Price * item.qty}</span></div>`;  
+      const name = item.Name || item["Product Name"];
+      h += `<div class="flex justify-between text-sm">${name} x${item.qty} <span>₹${item.Price * item.qty}</span></div>`;  
       total += (item.Price * item.qty);  
   });  
   document.getElementById("cartItems").innerHTML = h;  
@@ -231,21 +238,22 @@ function updateCartUI() {
   
 function openQuickOrder(p) {  
     currentQuickItem = p;  
-    document.getElementById("selectedItemName").innerText = "Item: " + (p["Product Name"] || p.Name);  
+    document.getElementById("selectedItemName").innerText = "Item: " + (p.Name || p["Product Name"]);  
     document.getElementById("quickOrderBox").classList.remove("hidden");  
 }  
   
 function closeQuickOrder() { document.getElementById("quickOrderBox").classList.add("hidden"); }  
   
-// 🔥 FIXED: Decreases stock in both Sheet and Firebase
 async function confirmQuickOrder() {  
     const data = {  
         "Customer Name": qName.value,  
         "Mobile": qMobile.value,  
         "Address": qAddress.value,  
-        "Products": (currentQuickItem["Product Name"] || currentQuickItem.Name),  
+        "Products": (currentQuickItem.Name || currentQuickItem["Product Name"]),  
         "Total": currentQuickItem.Price,  
         "Barcode": currentQuickItem.Barcode,
+        "Size": qSize.value,
+        "Color": qColor.value,
         "Status": "Pending"  
     };  
     await submitLogic(data);  
@@ -254,20 +262,22 @@ async function confirmQuickOrder() {
   
 async function submitLogic(data) {  
     try {  
-        // 1. Order to Firebase
+        // 1. Save Order to Firebase
         await db.collection("orders").add(data);  
         
-        // 2. Order to Sheet & Stock Update in Sheet
+        // 2. Save Order to Sheet
         await fetch(SHEET_URL, { 
             method: "POST", 
             body: JSON.stringify({ action: "placeOrder", ...data }) 
         });
+
+        // 3. Update Stock in Sheet
         await fetch(SHEET_URL + `?action=updateStock&barcode=${data.Barcode}&qty=1`);
 
-        // 3. Stock Update in Firebase
+        // 4. Update Stock in Firebase
         const fbSnap = await db.collection("products").where("Barcode", "==", data.Barcode).get();
         fbSnap.forEach(doc => {
-            let newStock = (doc.data().Stock || 1) - 1;
+            let newStock = (parseInt(doc.data().Stock) || 1) - 1;
             doc.ref.update({ Stock: newStock });
         });
 
