@@ -156,30 +156,45 @@ async function loadProducts() {
   } catch(e) { alert("❌ Load Error"); }
 }
   
-function renderProducts(list) {
+  
+  function renderProducts(list) {
     let html = "";
+    const container = document.getElementById("products");
+    
+    if (!list || list.length === 0) {
+        container.innerHTML = "<p class='text-center w-full'>No products found</p>";
+        return;
+    }
+
     list.forEach(p => {
-        // Aapki sheet ke columns ke exact naam (Name aur Image)
+        // Backend se aa raha hai: Name, Price, Image
         const img = p.Image || 'https://via.placeholder.com/150?text=No+Photo';
-        const name = p.Name || "No Name";
+        const name = p.Name || "Product";
         const price = p.Price || 0;
 
         html += `
-        <div class="bg-white p-2 rounded-2xl shadow-md border border-gray-100">
-          <img src="${img}" class="h-32 w-full object-cover rounded-xl" onerror="this.src='https://via.placeholder.com/150?text=Error'">
-          
-          <div class="flex text-[#FFD700] text-[8px] mt-1">
-              <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+        <div class="bg-white p-2 rounded-2xl shadow-md border border-gray-100 flex flex-col justify-between">
+          <div>
+            <img src="${img}" class="h-32 w-full object-cover rounded-xl" 
+                 onerror="this.src='https://via.placeholder.com/150?text=Link+Error'">
+            
+            <div class="flex text-[#FFD700] text-[8px] mt-2">
+                <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+            </div>
+            
+            <h3 class="text-[11px] font-bold mt-1 truncate text-gray-800">${name}</h3>
+            <p class="text-red-600 font-black text-sm mb-2">₹${price}</p>
           </div>
           
-          <h3 class="text-[11px] font-bold mt-1 truncate">${name}</h3>
-          <p class="text-red-600 font-black text-sm mb-2">₹${price}</p>
-          
-          <button onclick='openQuickOrder(${JSON.stringify(p)})' class="w-full bg-[#FFD700] text-black text-[10px] py-2.5 rounded-lg font-black shadow-sm active:scale-95">BUY NOW</button>
+          <button onclick='openQuickOrder(${JSON.stringify(p)})' 
+                  class="w-full bg-[#FFD700] text-black text-[10px] py-2.5 rounded-lg font-black shadow-sm active:scale-95">
+            BUY NOW
+          </button>
         </div>`;
     });
-    document.getElementById("products").innerHTML = html;
+    container.innerHTML = html;
 }
+
 
 
 
