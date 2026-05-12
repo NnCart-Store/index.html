@@ -4,280 +4,799 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#FF0000">
+<meta name="theme-color" content="#003399">
+
 <title>NnCart Full</title>
+
 <script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
 <style>
-img { background:#eee; min-height: 100px; }
-.product-card:active { transform: scale(0.98); }
-.no-scrollbar::-webkit-scrollbar { display: none; }
-.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-.line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-#quickOrderBox { transition: all 0.3s ease; }
+
+body{
+background:#f3f4f6;
+font-family:sans-serif;
+}
+
+img{
+background:#eee;
+min-height:100px;
+}
+
+.no-scrollbar::-webkit-scrollbar{
+display:none;
+}
+
+.no-scrollbar{
+-ms-overflow-style:none;
+scrollbar-width:none;
+}
+
+.line-clamp-2{
+display:-webkit-box;
+-webkit-line-clamp:2;
+-webkit-box-orient:vertical;
+overflow:hidden;
+}
+
+.product-card:active{
+transform:scale(.97);
+}
+
 </style>
 </head>
-<body class="bg-gray-100 pb-20">
 
-<header class="bg-[#003399] text-white p-4 sticky top-0 z-50 flex justify-between items-center shadow-md">
-  <div class="flex flex-col" onclick="location.reload()">
-      <h1 class="text-2xl font-black italic tracking-tighter leading-none">NnCart</h1>
-      <p class="text-[8px] italic font-medium opacity-90">Sab Kuch... Yahin Se!</p>
-  </div>
-  
-  <div class="flex items-center gap-4">
-    <i class="fa-solid fa-magnifying-glass text-lg cursor-pointer" onclick="document.getElementById('search').focus()"></i>
-    
-    <div class="relative cursor-pointer" onclick="toggleCart()">
-      <i class="fa-solid fa-cart-shopping text-2xl"></i>
-      <span id="cartCount" class="absolute -top-2 -right-2 bg-orange-600 text-white text-[10px] px-1.5 py-0.5 rounded-full font-bold border-2 border-[#003399]">0</span>
-    </div>
-  </div>
+<body class="pb-24">
+
+<!-- HEADER -->
+
+<header class="bg-[#003399] text-white p-4 sticky top-0 z-50 shadow-lg flex justify-between items-center">
+
+<div onclick="location.reload()" class="cursor-pointer">
+
+<h1 class="text-3xl font-black italic leading-none">
+NnCart
+</h1>
+
+<p class="text-[9px] opacity-80">
+Sab Kuch... Yahin Se!
+</p>
+
+</div>
+
+<div class="flex items-center gap-4">
+
+<i class="fa-solid fa-magnifying-glass text-xl"
+onclick="document.getElementById('search').focus()"></i>
+
+<div class="relative cursor-pointer"
+onclick="toggleCart()">
+
+<i class="fa-solid fa-cart-shopping text-2xl"></i>
+
+<span id="cartCount"
+class="absolute -top-2 -right-2 bg-red-600 text-white text-[10px] px-1.5 py-0.5 rounded-full">
+0
+</span>
+
+</div>
+
+</div>
+
 </header>
 
-<div class="bg-[#003399] p-3 pb-8 rounded-b-[30px] shadow-lg">
-    <div class="relative flex items-center">
-        <i class="fa-solid fa-magnifying-glass absolute left-4 text-gray-400"></i>
-        <input id="search" oninput="searchProduct()" placeholder="Search for products..." class="w-full p-3 pl-12 rounded-xl outline-none text-sm text-gray-700 shadow-inner">
-        <i class="fa-solid fa-microphone absolute right-4 text-[#003399]"></i>
-    </div>
+<!-- SEARCH -->
+
+<div class="bg-[#003399] p-3 rounded-b-[25px] shadow-md">
+
+<div class="relative">
+
+<input
+id="search"
+oninput="searchProduct()"
+placeholder="Search Products..."
+class="w-full p-3 rounded-xl pl-11 outline-none text-sm">
+
+<i class="fa-solid fa-magnifying-glass absolute left-4 top-4 text-gray-400"></i>
+
 </div>
 
-<div class="px-3 -mt-5 mb-2">
-    <div class="w-full bg-gradient-to-r from-orange-500 via-red-600 to-pink-600 rounded-2xl shadow-xl overflow-hidden relative border-2 border-white">
-        <div class="p-4 flex justify-between items-center relative z-10">
-            <div>
-                <h3 class="text-white text-[10px] font-bold tracking-widest uppercase opacity-90">Special Offer</h3>
-                <p class="text-white text-2xl font-black italic leading-tight">PRIMEUM BIG SALE <br> <span class="text-yellow-300">LIVE NOW</span></p>
-                <div class="mt-2 inline-block bg-white text-red-600 text-[12px] px-4 py-1 rounded-full font-black shadow-lg animate-bounce">
-                    UP TO 55% OFF
-                </div>
-            </div>
-            <div class="bg-white/20 p-3 rounded-full backdrop-blur-sm">
-                <i class="fa-solid fa-bolt-lightning text-yellow-300 text-4xl animate-pulse"></i>
-            </div>
-        </div>
-    </div>
 </div>
 
-<div class="flex gap-4 overflow-x-auto no-scrollbar p-4 bg-white">
-    <div onclick="filterByCategory('Saree')" class="flex flex-col items-center min-w-[70px]">
-        <div class="w-16 h-16 rounded-full overflow-hidden border-2 border-gray-100 shadow-sm">
-            <img src="https://m.media-amazon.com/images/I/71z3uD+6clL._AC_UY1100_.jpg" class="w-full h-full object-cover">
-        </div>
-        <span class="text-[11px] font-bold mt-1 text-gray-700">Shari</span>
-    </div>
-    <div onclick="filterByCategory('Kurti')" class="flex flex-col items-center min-w-[70px]">
-        <div class="w-16 h-16 rounded-full overflow-hidden border-2 border-gray-100 shadow-sm">
-            <img src="https://m.media-amazon.com/images/I/61vI80lYv+L._AC_UY1100_.jpg" class="w-full h-full object-cover">
-        </div>
-        <span class="text-[11px] font-bold mt-1 text-gray-700">Kurti</span>
-    </div>
-    <div onclick="filterByCategory('Jeans')" class="flex flex-col items-center min-w-[70px]">
-        <div class="w-16 h-16 rounded-full overflow-hidden border-2 border-gray-100 shadow-sm">
-            <img src="https://5.imimg.com/data5/ANDROID/Default/2021/1/WA/TC/ZZ/27725946/product-500x500.jpg" class="w-full h-full object-cover">
-        </div>
-        <span class="text-[11px] font-bold mt-1 text-gray-700">Jeans</span>
-    </div>
-    <div onclick="filterByCategory('Shirt')" class="flex flex-col items-center min-w-[70px]">
-        <div class="w-16 h-16 rounded-full overflow-hidden border-2 border-gray-100 shadow-sm">
-            <img src="https://m.media-amazon.com/images/I/71S9O6Ojc6L._AC_UY1100_.jpg" class="w-full h-full object-cover">
-        </div>
-        <span class="text-[11px] font-bold mt-1 text-gray-700">Shirt</span>
-    </div>
-</div> 
+<!-- BANNER -->
 
-<div id="products" class="grid grid-cols-2 gap-3 p-3"></div>
+<div class="p-3">
 
-<!-- Order Cart Box -->
-<div id="orderBox" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
-    <div class="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl overflow-y-auto max-h-[90vh]">
-        <h2 class="text-xl font-black mb-2 text-red-600 border-b pb-2">Your Cart</h2>
-        <div id="cartItems" class="space-y-2 mb-4"></div>
-        <div class="border-t pt-2 mb-4">
-            <p class="flex justify-between font-bold">Total: <span id="total">0</span></p>
-        </div>
-        <div class="space-y-3">
-            <input id="cName" placeholder="आपका नाम" class="w-full p-3 bg-gray-50 border rounded-xl outline-none">
-            <input id="mobile" placeholder="मोबाइल नंबर" class="w-full p-3 bg-gray-50 border rounded-xl outline-none">
-            <textarea id="address" placeholder="पूरा पता" class="w-full p-3 bg-gray-50 border rounded-xl outline-none h-20"></textarea>
-        </div>
-        <div class="flex gap-2 mt-6">
-            <button onclick="document.getElementById('orderBox').classList.add('hidden')" class="flex-1 py-3 font-bold text-gray-500">Close</button>
-            <button onclick="submitOrder()" class="flex-1 py-3 bg-blue-600 text-white font-bold rounded-xl shadow-lg">Place Order</button>
-        </div>
-    </div>
+<div class="bg-gradient-to-r from-orange-500 via-red-600 to-pink-600 rounded-3xl p-5 shadow-xl text-white">
+
+<p class="text-[11px] font-bold tracking-widest">
+SPECIAL OFFER
+</p>
+
+<h2 class="text-3xl font-black italic leading-tight mt-1">
+BIG SALE
+</h2>
+
+<div class="mt-3 inline-block bg-white text-red-600 px-4 py-1 rounded-full font-black text-sm">
+UP TO 55% OFF
 </div>
 
-<!-- Quick Buy Modal -->
-<div id="quickOrderBox" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
-    <div class="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl overflow-y-auto max-h-[90vh]">
-        <h2 class="text-xl font-black mb-2 text-red-600 border-b pb-2 italic uppercase">Quick Order</h2>
-        <p id="selectedItemName" class="font-bold text-gray-700 mb-4 bg-gray-100 p-2 rounded-lg text-sm"></p>
-        <div class="space-y-3">
-            <input id="qName" placeholder="आपका नाम" class="w-full p-3 bg-gray-50 border rounded-xl outline-none">
-            <input id="qMobile" placeholder="मोबाइल नंबर" class="w-full p-3 bg-gray-50 border rounded-xl outline-none">
-            <div class="grid grid-cols-2 gap-2">
-                <input id="qSize" placeholder="Size (L, XL)" class="p-3 bg-gray-50 border rounded-xl outline-none">
-                <input id="qColor" placeholder="Color" class="p-3 bg-gray-50 border rounded-xl outline-none">
-            </div>
-            <textarea id="qAddress" placeholder="पूरा पता (Full Address)" class="w-full p-3 bg-gray-50 border rounded-xl outline-none h-20"></textarea>
-        </div>
-        <div class="flex gap-2 mt-6">
-            <button onclick="closeQuickOrder()" class="flex-1 py-3 font-bold text-gray-400">CANCEL</button>
-            <button onclick="confirmQuickOrder()" class="flex-1 py-3 bg-green-600 text-white font-bold rounded-xl shadow-lg border-b-4 border-green-800">CONFIRM ✅</button>
-        </div>
-    </div>
 </div>
+
+</div>
+
+<!-- CATEGORY -->
+
+<div class="flex gap-4 overflow-x-auto no-scrollbar px-4 py-2 bg-white">
+
+<div onclick="filterByCategory('Saree')"
+class="flex flex-col items-center min-w-[70px] cursor-pointer">
+
+<img
+src="https://m.media-amazon.com/images/I/71z3uD+6clL._AC_UY1100_.jpg"
+class="w-16 h-16 rounded-full object-cover border">
+
+<p class="text-[11px] font-bold mt-1">
+Saree
+</p>
+
+</div>
+
+<div onclick="filterByCategory('Kurti')"
+class="flex flex-col items-center min-w-[70px] cursor-pointer">
+
+<img
+src="https://m.media-amazon.com/images/I/61vI80lYv+L._AC_UY1100_.jpg"
+class="w-16 h-16 rounded-full object-cover border">
+
+<p class="text-[11px] font-bold mt-1">
+Kurti
+</p>
+
+</div>
+
+<div onclick="filterByCategory('Jeans')"
+class="flex flex-col items-center min-w-[70px] cursor-pointer">
+
+<img
+src="https://5.imimg.com/data5/ANDROID/Default/2021/1/WA/TC/ZZ/27725946/product-500x500.jpg"
+class="w-16 h-16 rounded-full object-cover border">
+
+<p class="text-[11px] font-bold mt-1">
+Jeans
+</p>
+
+</div>
+
+<div onclick="filterByCategory('Shirt')"
+class="flex flex-col items-center min-w-[70px] cursor-pointer">
+
+<img
+src="https://m.media-amazon.com/images/I/71S9O6Ojc6L._AC_UY1100_.jpg"
+class="w-16 h-16 rounded-full object-cover border">
+
+<p class="text-[11px] font-bold mt-1">
+Shirt
+</p>
+
+</div>
+
+</div>
+
+<!-- PRODUCTS -->
+
+<div id="products"
+class="grid grid-cols-2 gap-3 p-3">
+</div>
+
+<!-- CART -->
+
+<div id="orderBox"
+class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+
+<div class="bg-white rounded-3xl w-full max-w-sm p-5 max-h-[90vh] overflow-y-auto">
+
+<h2 class="font-black text-2xl mb-3 text-red-600">
+Your Cart
+</h2>
+
+<div id="cartItems" class="space-y-2"></div>
+
+<div class="border-t mt-4 pt-3">
+
+<p class="flex justify-between font-black">
+
+<span>Total</span>
+
+<span id="total">₹0</span>
+
+</p>
+
+</div>
+
+<div class="space-y-3 mt-4">
+
+<input
+id="cName"
+placeholder="Your Name"
+class="w-full p-3 border rounded-xl">
+
+<input
+id="mobile"
+placeholder="Mobile Number"
+class="w-full p-3 border rounded-xl">
+
+<textarea
+id="address"
+placeholder="Full Address"
+class="w-full p-3 border rounded-xl h-24"></textarea>
+
+</div>
+
+<div class="flex gap-2 mt-5">
+
+<button
+onclick="toggleCart()"
+class="flex-1 py-3 rounded-xl bg-gray-200 font-bold">
+
+Close
+
+</button>
+
+<button
+onclick="submitOrder()"
+class="flex-1 py-3 rounded-xl bg-blue-600 text-white font-bold">
+
+Place Order
+
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- QUICK ORDER -->
+
+<div id="quickOrderBox"
+class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+
+<div class="bg-white rounded-3xl w-full max-w-sm p-5">
+
+<h2 class="text-2xl font-black text-green-600 mb-3">
+Quick Order
+</h2>
+
+<p id="selectedItemName"
+class="bg-gray-100 p-2 rounded-lg text-sm font-bold mb-4"></p>
+
+<div class="space-y-3">
+
+<input
+id="qName"
+placeholder="Your Name"
+class="w-full p-3 border rounded-xl">
+
+<input
+id="qMobile"
+placeholder="Mobile Number"
+class="w-full p-3 border rounded-xl">
+
+<div class="grid grid-cols-2 gap-2">
+
+<input
+id="qSize"
+placeholder="Size"
+class="p-3 border rounded-xl">
+
+<input
+id="qColor"
+placeholder="Color"
+class="p-3 border rounded-xl">
+
+</div>
+
+<textarea
+id="qAddress"
+placeholder="Full Address"
+class="w-full p-3 border rounded-xl h-24"></textarea>
+
+</div>
+
+<div class="flex gap-2 mt-5">
+
+<button
+onclick="closeQuickOrder()"
+class="flex-1 py-3 rounded-xl bg-gray-200 font-bold">
+
+Cancel
+
+</button>
+
+<button
+onclick="confirmQuickOrder()"
+class="flex-1 py-3 rounded-xl bg-green-600 text-white font-bold">
+
+Confirm
+
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- FIREBASE -->
 
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
 <script>
-// 🔥 CONFIG
+
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "nncart.firebaseapp.com",
-  projectId: "nncart"
+
+apiKey:"AIzaSyCH2di4fAKw8vA80Cv8BMobi-v1p0I",
+
+authDomain:"nncart.firebaseapp.com",
+
+projectId:"nncart",
+
+storageBucket:"nncart.firebasestorage.app",
+
+messagingSenderId:"662993037031",
+
+appId:"1:662993037031:web:893e379fe374cb74d26442"
+
 };
+
 firebase.initializeApp(firebaseConfig);
+
 const db = firebase.firestore();
-const SHEET_URL = "https://script.google.com/macros/s/AKfycbzYpLUiX8Wu7-4Zfd47lV79RJkBwSszBJw-4o10lTWER8SGVftsjwCq3mIbgmQ8vTdt/exec";
 
 let allProducts = [];
+
 let cart = [];
+
 let currentQuickItem = null;
 
-async function loadProducts() {
-  try {
-    const snap = await db.collection("products").get();
-    allProducts = snap.docs.map(doc => doc.data());
-    renderProducts(allProducts);
-  } catch(e) { alert("❌ Load Error"); }
+
+
+async function loadProducts(){
+
+try{
+
+const snap =
+await db.collection("products").get();
+
+allProducts =
+snap.docs.map(doc => ({
+id:doc.id,
+...doc.data()
+}));
+
+renderProducts(allProducts);
+
+}catch(e){
+
+console.log(e);
+
+alert("Product Load Error");
+
 }
-  
-  
-  function renderProducts(list) {
-    let html = "";
-    const container = document.getElementById("products");
-    
-    if (!list || list.length === 0) {
-        container.innerHTML = "<p class='text-center w-full'>No products found</p>";
-        return;
-    }
 
-    list.forEach(p => {
-        // Backend se aa raha hai: Name, Price, Image
-        const img = p.Image || 'https://via.placeholder.com/150?text=No+Photo';
-        const name = p.Name || "Product";
-        const price = p.Price || 0;
-
-        html += `
-        <div class="bg-white p-2 rounded-2xl shadow-md border border-gray-100 flex flex-col justify-between">
-          <div>
-            <img src="${img}" class="h-32 w-full object-cover rounded-xl" 
-                 onerror="this.src='https://via.placeholder.com/150?text=Link+Error'">
-            
-            <div class="flex text-[#FFD700] text-[8px] mt-2">
-                <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
-            </div>
-            
-            <h3 class="text-[11px] font-bold mt-1 truncate text-gray-800">${name}</h3>
-            <p class="text-red-600 font-black text-sm mb-2">₹${price}</p>
-          </div>
-          
-          <button onclick='openQuickOrder(${JSON.stringify(p)})' 
-                  class="w-full bg-[#FFD700] text-black text-[10px] py-2.5 rounded-lg font-black shadow-sm active:scale-95">
-            BUY NOW
-          </button>
-        </div>`;
-    });
-    container.innerHTML = html;
 }
 
 
 
+function renderProducts(list){
 
-function searchProduct() {
-  const v = document.getElementById("search").value.toLowerCase();
-  const filtered = allProducts.filter(p => (p["Product Name"] || p.Name || "").toLowerCase().includes(v));
-  renderProducts(filtered);
+const container =
+document.getElementById("products");
+
+if(!list.length){
+
+container.innerHTML =
+"<p>No Products Found</p>";
+
+return;
 }
 
-function filterByCategory(cat) {
-  const filtered = allProducts.filter(p => (p.Category || "").toLowerCase() === cat.toLowerCase());
-  renderProducts(filtered);
+let html = "";
+
+list.forEach((p,index)=>{
+
+const img =
+p.Image ||
+p.image ||
+"https://via.placeholder.com/300";
+
+const name =
+p.Name ||
+"Product";
+
+const price =
+p.Price ||
+0;
+
+html += `
+
+<div class="bg-white rounded-2xl shadow-md overflow-hidden product-card">
+
+<img
+src="${img}"
+class="w-full h-40 object-cover"
+loading="lazy"
+onerror="this.src='https://via.placeholder.com/300?text=No+Image'">
+
+<div class="p-2">
+
+<h2 class="text-[12px] font-bold line-clamp-2 min-h-[36px]">
+${name}
+</h2>
+
+<p class="text-red-600 font-black text-lg mt-1">
+₹${price}
+</p>
+
+<div class="flex gap-2 mt-2">
+
+<button
+onclick="buyNow(${index})"
+class="flex-1 bg-yellow-400 py-2 rounded-lg text-[11px] font-black">
+
+BUY NOW
+
+</button>
+
+<button
+onclick="addToCart(${index})"
+class="bg-[#003399] text-white px-3 rounded-lg">
+
+<i class="fa-solid fa-cart-shopping"></i>
+
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+`;
+
+});
+
+container.innerHTML = html;
+
 }
 
-function toggleCart() { document.getElementById("orderBox").classList.toggle("hidden"); }
 
-function addToCart(p) {
-  const name = p["Product Name"] || p.Name;
-  const found = cart.find(i => (i["Product Name"] || i.Name) === name);
-  if(found){ found.qty += 1; } else { p.qty = 1; cart.push(p); }
-  updateCartUI();
+
+function searchProduct(){
+
+const value =
+document.getElementById("search")
+.value
+.toLowerCase();
+
+const filtered =
+allProducts.filter(p =>
+
+(p.Name || "")
+.toLowerCase()
+.includes(value)
+
+);
+
+renderProducts(filtered);
+
 }
 
-function updateCartUI() {
-  document.getElementById("cartCount").innerText = cart.length;
-  let h = ""; let total = 0;
-  cart.forEach((item, index) => {
-      h += `<div class="flex justify-between text-sm">${item["Product Name"] || item.Name} x${item.qty} <span>₹${item.Price * item.qty}</span></div>`;
-      total += (item.Price * item.qty);
-  });
-  document.getElementById("cartItems").innerHTML = h;
-  document.getElementById("total").innerText = total;
+
+
+function filterByCategory(cat){
+
+const filtered =
+allProducts.filter(p =>
+
+(p.Category || "")
+.toLowerCase()
+.includes(cat.toLowerCase())
+
+);
+
+renderProducts(filtered);
+
 }
 
-function openQuickOrder(p) {
-    currentQuickItem = p;
-    document.getElementById("selectedItemName").innerText = "Item: " + (p["Product Name"] || p.Name);
-    document.getElementById("quickOrderBox").classList.remove("hidden");
+
+
+function addToCart(index){
+
+const p = allProducts[index];
+
+const found =
+cart.find(item =>
+item.Name === p.Name
+);
+
+if(found){
+
+found.qty += 1;
+
+}else{
+
+cart.push({
+...p,
+qty:1
+});
+
 }
 
-function closeQuickOrder() { document.getElementById("quickOrderBox").classList.add("hidden"); }
+updateCartUI();
 
-async function confirmQuickOrder() {
-    const data = {
-        "Customer Name": qName.value,
-        "Mobile": qMobile.value,
-        "Address": qAddress.value,
-        "Products": (currentQuickItem["Product Name"] || currentQuickItem.Name),
-        "Total": currentQuickItem.Price,
-        "Status": "Pending"
-    };
-    await submitLogic(data);
-    closeQuickOrder();
 }
 
-async function submitLogic(data) {
-    try {
-        await db.collection("orders").add(data);
-        await fetch(SHEET_URL + "?action=placeOrder", { method: "POST", body: JSON.stringify(data) });
-        alert("Order Success ✅");
-    } catch(e) { alert("Error ❌"); }
+
+
+function updateCartUI(){
+
+document.getElementById("cartCount")
+.innerText = cart.length;
+
+let html = "";
+
+let total = 0;
+
+cart.forEach(item=>{
+
+const qty = item.qty || 1;
+
+const price = Number(item.Price || 0);
+
+total += qty * price;
+
+html += `
+
+<div class="flex justify-between bg-gray-100 p-2 rounded-lg">
+
+<div>
+
+<p class="font-bold text-sm">
+${item.Name}
+</p>
+
+<p class="text-xs">
+Qty: ${qty}
+</p>
+
+</div>
+
+<p class="font-black text-red-600">
+₹${qty * price}
+</p>
+
+</div>
+
+`;
+
+});
+
+document.getElementById("cartItems")
+.innerHTML = html;
+
+document.getElementById("total")
+.innerText = "₹" + total;
+
 }
+
+
+
+function toggleCart(){
+
+document.getElementById("orderBox")
+.classList.toggle("hidden");
+
+}
+
+
+
+function buyNow(index){
+
+currentQuickItem =
+allProducts[index];
+
+document.getElementById("selectedItemName")
+.innerText =
+currentQuickItem.Name;
+
+document.getElementById("quickOrderBox")
+.classList.remove("hidden");
+
+}
+
+
+
+function closeQuickOrder(){
+
+document.getElementById("quickOrderBox")
+.classList.add("hidden");
+
+}
+
+
+
+async function confirmQuickOrder(){
+
+const data = {
+
+Customer_Name:
+document.getElementById("qName").value,
+
+Mobile:
+document.getElementById("qMobile").value,
+
+Address:
+document.getElementById("qAddress").value,
+
+Size:
+document.getElementById("qSize").value,
+
+Color:
+document.getElementById("qColor").value,
+
+Product:
+currentQuickItem.Name,
+
+Price:
+currentQuickItem.Price,
+
+Status:"Pending",
+
+Timestamp:
+new Date().toISOString()
+
+};
+
+try{
+
+await db.collection("orders").add(data);
+
+alert("Order Success");
+
+closeQuickOrder();
+
+}catch(e){
+
+console.log(e);
+
+alert("Order Failed");
+
+}
+
+}
+
+
+
+async function submitOrder(){
+
+if(cart.length === 0){
+
+alert("Cart Empty");
+
+return;
+
+}
+
+const data = {
+
+Customer_Name:
+document.getElementById("cName").value,
+
+Mobile:
+document.getElementById("mobile").value,
+
+Address:
+document.getElementById("address").value,
+
+Products:cart,
+
+Total:
+document.getElementById("total")
+.innerText,
+
+Status:"Pending",
+
+Timestamp:
+new Date().toISOString()
+
+};
+
+try{
+
+await db.collection("orders").add(data);
+
+alert("Order Success");
+
+cart = [];
+
+updateCartUI();
+
+toggleCart();
+
+}catch(e){
+
+console.log(e);
+
+alert("Order Failed");
+
+}
+
+}
+
+
 
 loadProducts();
+
 </script>
 
-<footer class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 flex justify-around py-3 z-[100]">
-    <button onclick="location.reload()" class="flex flex-col items-center text-red-600">
-        <i class="fa-solid fa-house text-xl"></i>
-        <span class="text-[10px] font-bold mt-1">HOME</span>
-    </button>
-    <button onclick="document.getElementById('products').scrollIntoView()" class="flex flex-col items-center text-gray-500">
-        <i class="fa-solid fa-layer-group text-xl"></i>
-        <span class="text-[10px] font-bold mt-1">CATEGORIES</span>
-    </button>
-    <button onclick="alert('Orders track feature coming soon!')" class="flex flex-col items-center text-gray-500">
-        <i class="fa-solid fa-truck-fast text-xl"></i>
-        <span class="text-[10px] font-bold mt-1">ORDERS</span>
-    </button>
-    <button onclick="alert('Profile section coming soon!')" class="flex flex-col items-center text-gray-500">
-        <i class="fa-solid fa-user text-xl"></i>
-        <span class="text-[10px] font-bold mt-1">ACCOUNT</span>
-    </button>
+<!-- FOOTER -->
+
+<footer class="fixed bottom-0 left-0 right-0 bg-white border-t flex justify-around py-3">
+
+<button
+onclick="location.reload()"
+class="flex flex-col items-center text-red-600">
+
+<i class="fa-solid fa-house text-xl"></i>
+
+<span class="text-[10px] font-bold">
+HOME
+</span>
+
+</button>
+
+<button
+onclick="window.scrollTo(0,0)"
+class="flex flex-col items-center text-gray-500">
+
+<i class="fa-solid fa-layer-group text-xl"></i>
+
+<span class="text-[10px] font-bold">
+TOP
+</span>
+
+</button>
+
+<button
+onclick="toggleCart()"
+class="flex flex-col items-center text-gray-500">
+
+<i class="fa-solid fa-cart-shopping text-xl"></i>
+
+<span class="text-[10px] font-bold">
+CART
+</span>
+
+</button>
+
+<button
+onclick="alert('Profile Coming Soon')"
+class="flex flex-col items-center text-gray-500">
+
+<i class="fa-solid fa-user text-xl"></i>
+
+<span class="text-[10px] font-bold">
+ACCOUNT
+</span>
+
+</button>
+
 </footer>
 
 </body>
