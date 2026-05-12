@@ -1,116 +1,135 @@
-<!DOCTYPE html> 
-<html lang="hi">  
-<head>  
-<meta charset="UTF-8">  
-<meta name="viewport" content="width=device-width, initial-scale=1.0">  
-<link rel="manifest" href="manifest.json">  
-<meta name="theme-color" content="#FF972E">  
-<title>NnCart Full</title>  
-<script src="https://cdn.tailwindcss.com"></script>  
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">  
-<style>  
-img { background:#eee; min-height: 100px; }  
-.product-card:active { transform: scale(0.98); }  
-.no-scrollbar::-webkit-scrollbar { display: none; }  
-.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }  
-.line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }  
-#quickOrderBox { transition: all 0.3s ease; }  
-</style>  
-</head>  
-<body class="bg-gray-100 pb-20">  <header class="bg-[#003399] text-white p-4 sticky top-0 z-50 flex justify-between items-center shadow-md">  
-  <div class="flex flex-col" onclick="location.reload()">  
-      <h1 class="text-2xl font-black italic tracking-tighter leading-none">NnCart</h1>  
-      <p class="text-[8px] italic font-medium opacity-90">Sab Kuch... Yahin Se!</p>  
-  </div>    <div class="flex items-center gap-4">  
-    <i class="fa-solid fa-magnifying-glass text-lg cursor-pointer" onclick="document.getElementById('search').focus()"></i>  <div class="relative cursor-pointer" onclick="toggleCart()">  
-  <i class="fa-solid fa-cart-shopping text-2xl"></i>  
-  <span id="cartCount" class="absolute -top-2 -right-2 bg-orange-600 text-white text-[10px] px-1.5 py-0.5 rounded-full font-bold border-2 border-[#003399]">0</span>  
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#FF972E">
+<title>NnCart Full</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+img { background:#eee; min-height: 100px; }
+.product-card:active { transform: scale(0.98); }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+.line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+#quickOrderBox { transition: all 0.3s ease; }
+</style>
+</head>
+<body class="bg-gray-100 pb-20">
+
+<header class="bg-[#003399] text-white p-4 sticky top-0 z-50 flex justify-between items-center shadow-md">
+  <div class="flex flex-col" onclick="location.reload()">
+      <h1 class="text-2xl font-black italic tracking-tighter leading-none">NnCart</h1>
+      <p class="text-[8px] italic font-medium opacity-90">Sab Kuch... Yahin Se!</p>
+  </div>
+  <div class="flex items-center gap-4">
+    <i class="fa-solid fa-magnifying-glass text-lg cursor-pointer" onclick="document.getElementById('search').focus()"></i>
+    <div class="relative cursor-pointer" onclick="toggleCart()">
+      <i class="fa-solid fa-cart-shopping text-2xl"></i>
+      <span id="cartCount" class="absolute -top-2 -right-2 bg-orange-600 text-white text-[10px] px-1.5 py-0.5 rounded-full font-bold border-2 border-[#003399]">0</span>
+    </div>
+  </div>
+</header>
+
+<div class="bg-[#003399] p-3 pb-8 rounded-b-[30px] shadow-lg">
+    <div class="relative flex items-center">
+        <i class="fa-solid fa-magnifying-glass absolute left-4 text-gray-400"></i>
+        <input id="search" oninput="searchProduct()" placeholder="Search for products..." class="w-full p-3 pl-12 rounded-xl outline-none text-sm text-gray-700 shadow-inner">
+        <i class="fa-solid fa-microphone absolute right-4 text-[#003399]"></i>
+    </div>
 </div>
 
-  </div>  
-</header>  <div class="bg-[#003399] p-3 pb-8 rounded-b-[30px] shadow-lg">  
-    <div class="relative flex items-center">  
-        <i class="fa-solid fa-magnifying-glass absolute left-4 text-gray-400"></i>  
-        <input id="search" oninput="searchProduct()" placeholder="Search for products..." class="w-full p-3 pl-12 rounded-xl outline-none text-sm text-gray-700 shadow-inner">  
-        <i class="fa-solid fa-microphone absolute right-4 text-[#003399]"></i>  
-    </div>  
-</div>  <div class="px-3 -mt-5 mb-2">  
-    <div class="w-full bg-gradient-to-r from-orange-500 via-red-600 to-pink-600 rounded-2xl shadow-xl overflow-hidden relative border-2 border-white">  
-        <div class="p-4 flex justify-between items-center relative z-10">  
-            <div>  
-                <h3 class="text-white text-[10px] font-bold tracking-widest uppercase opacity-90">Special Offer</h3>  
-                <p class="text-white text-2xl font-black italic leading-tight">PRIMEUM BIG SALE <br> <span class="text-yellow-300">LIVE NOW</span></p>  
-                <div class="mt-2 inline-block bg-white text-red-600 text-[12px] px-4 py-1 rounded-full font-black shadow-lg animate-bounce">  
-                    UP TO 55% OFF  
-                </div>  
-            </div>  
-            <div class="bg-white/20 p-3 rounded-full backdrop-blur-sm">  
-                <i class="fa-solid fa-bolt-lightning text-yellow-300 text-4xl animate-pulse"></i>  
-            </div>  
-        </div>  
-    </div>  
-</div>  <div class="flex gap-4 overflow-x-auto no-scrollbar p-4 bg-white">  
-    <div onclick="filterByCategory('Saree')" class="flex flex-col items-center min-w-[70px]">  
-        <div class="w-16 h-16 rounded-full overflow-hidden border-2 border-gray-100 shadow-sm">  
-            <img src="https://m.media-amazon.com/images/I/71z3uD+6clL._AC_UY1100_.jpg" class="w-full h-full object-cover">  
-        </div>  
-        <span class="text-[11px] font-bold mt-1 text-gray-700">Shari</span>  
-    </div>  
-    <div onclick="filterByCategory('Kurti')" class="flex flex-col items-center min-w-[70px]">  
-        <div class="w-16 h-16 rounded-full overflow-hidden border-2 border-gray-100 shadow-sm">  
-            <img src="https://m.media-amazon.com/images/I/61vI80lYv+L._AC_UY1100_.jpg" class="w-full h-full object-cover">  
-        </div>  
-        <span class="text-[11px] font-bold mt-1 text-gray-700">Kurti</span>  
-    </div>  
-    <div onclick="filterByCategory('Jeans')" class="flex flex-col items-center min-w-[70px]">  
-        <div class="w-16 h-16 rounded-full overflow-hidden border-2 border-gray-100 shadow-sm">  
-            <img src="https://5.imimg.com/data5/ANDROID/Default/2021/1/WA/TC/ZZ/27725946/product-500x500.jpg" class="w-full h-full object-cover">  
-        </div>  
-        <span class="text-[11px] font-bold mt-1 text-gray-700">Jeans</span>  
-    </div>  
-    <div onclick="filterByCategory('Shirt')" class="flex flex-col items-center min-w-[70px]">  
-        <div class="w-16 h-16 rounded-full overflow-hidden border-2 border-gray-100 shadow-sm">  
-            <img src="https://m.media-amazon.com/images/I/71S9O6Ojc6L._AC_UY1100_.jpg" class="w-full h-full object-cover">  
-        </div>  
-        <span class="text-[11px] font-bold mt-1 text-gray-700">Shirt</span>  
-    </div>  
-</div>   <div id="products" class="grid grid-cols-2 gap-3 p-3"></div>  <!-- Order Cart Box -->  <div id="orderBox" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-[100] flex items-center justify-center p-4">  
-    <div class="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl overflow-y-auto max-h-[90vh]">  
-        <h2 class="text-xl font-black mb-2 text-red-600 border-b pb-2">Your Cart</h2>  
-        <div id="cartItems" class="space-y-2 mb-4"></div>  
-        <div class="border-t pt-2 mb-4">  
-            <p class="flex justify-between font-bold">Total: <span id="total">0</span></p>  
-        </div>  
-        <div class="space-y-3">  
-            <input id="cName" placeholder="आपका नाम" class="w-full p-3 bg-gray-50 border rounded-xl outline-none">  
-            <input id="mobile" placeholder="मोबाइल नंबर" class="w-full p-3 bg-gray-50 border rounded-xl outline-none">  
-            <textarea id="address" placeholder="पूरा पता" class="w-full p-3 bg-gray-50 border rounded-xl outline-none h-20"></textarea>  
-        </div>  
-        <div class="flex gap-2 mt-6">  
-            <button onclick="document.getElementById('orderBox').classList.add('hidden')" class="flex-1 py-3 font-bold text-gray-500">Close</button>  
-            <button onclick="submitOrder()" class="flex-1 py-3 bg-blue-600 text-white font-bold rounded-xl shadow-lg">Place Order</button>  
-        </div>  
-    </div>  
-</div>  <!-- Quick Buy Modal -->  <div id="quickOrderBox" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-[100] flex items-center justify-center p-4">  
-    <div class="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl overflow-y-auto max-h-[90vh]">  
-        <h2 class="text-xl font-black mb-2 text-red-600 border-b pb-2 italic uppercase">Quick Order</h2>  
-        <p id="selectedItemName" class="font-bold text-gray-700 mb-4 bg-gray-100 p-2 rounded-lg text-sm"></p>  
-        <div class="space-y-3">  
-            <input id="qName" placeholder="आपका नाम" class="w-full p-3 bg-gray-50 border rounded-xl outline-none">  
-            <input id="qMobile" placeholder="मोबाइल नंबर" class="w-full p-3 bg-gray-50 border rounded-xl outline-none">  
-            <div class="grid grid-cols-2 gap-2">  
-                <input id="qSize" placeholder="Size (L, XL)" class="p-3 bg-gray-50 border rounded-xl outline-none">  
-                <input id="qColor" placeholder="Color" class="p-3 bg-gray-50 border rounded-xl outline-none">  
-            </div>  
-            <textarea id="qAddress" placeholder="पूरा पता (Full Address)" class="w-full p-3 bg-gray-50 border rounded-xl outline-none h-20"></textarea>  
-        </div>  
-        <div class="flex gap-2 mt-6">  
-            <button onclick="closeQuickOrder()" class="flex-1 py-3 font-bold text-gray-400">CANCEL</button>  
-            <button onclick="confirmQuickOrder()" class="flex-1 py-3 bg-green-600 text-white font-bold rounded-xl shadow-lg border-b-4 border-green-800">CONFIRM ✅</button>  
-        </div>  
-    </div>  
-</div>  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>  <script>  
-// 🔥 CONFIG  
+<div class="px-3 -mt-5 mb-2">
+    <div class="w-full bg-gradient-to-r from-orange-500 via-red-600 to-pink-600 rounded-2xl shadow-xl overflow-hidden relative border-2 border-white">
+        <div class="p-4 flex justify-between items-center relative z-10">
+            <div>
+                <h3 class="text-white text-[10px] font-bold tracking-widest uppercase opacity-90">Special Offer</h3>
+                <p class="text-white text-2xl font-black italic leading-tight">PRIMEUM BIG SALE <br> <span class="text-yellow-300">LIVE NOW</span></p>
+                <div class="mt-2 inline-block bg-white text-red-600 text-[12px] px-4 py-1 rounded-full font-black shadow-lg animate-bounce">
+                    UP TO 55% OFF
+                </div>
+            </div>
+            <div class="bg-white/20 p-3 rounded-full backdrop-blur-sm">
+                <i class="fa-solid fa-bolt-lightning text-yellow-300 text-4xl animate-pulse"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="flex gap-4 overflow-x-auto no-scrollbar p-4 bg-white">
+    <div onclick="filterByCategory('Saree')" class="flex flex-col items-center min-w-[70px]">
+        <div class="w-16 h-16 rounded-full overflow-hidden border-2 border-gray-100 shadow-sm">
+            <img src="https://m.media-amazon.com/images/I/71z3uD+6clL._AC_UY1100_.jpg" class="w-full h-full object-cover">
+        </div>
+        <span class="text-[11px] font-bold mt-1 text-gray-700">Shari</span>
+    </div>
+    <div onclick="filterByCategory('Kurti')" class="flex flex-col items-center min-w-[70px]">
+        <div class="w-16 h-16 rounded-full overflow-hidden border-2 border-gray-100 shadow-sm">
+            <img src="https://m.media-amazon.com/images/I/61vI80lYv+L._AC_UY1100_.jpg" class="w-full h-full object-cover">
+        </div>
+        <span class="text-[11px] font-bold mt-1 text-gray-700">Kurti</span>
+    </div>
+    <div onclick="filterByCategory('Jeans')" class="flex flex-col items-center min-w-[70px]">
+        <div class="w-16 h-16 rounded-full overflow-hidden border-2 border-gray-100 shadow-sm">
+            <img src="https://5.imimg.com/data5/ANDROID/Default/2021/1/WA/TC/ZZ/27725946/product-500x500.jpg" class="w-full h-full object-cover">
+        </div>
+        <span class="text-[11px] font-bold mt-1 text-gray-700">Jeans</span>
+    </div>
+    <div onclick="filterByCategory('Shirt')" class="flex flex-col items-center min-w-[70px]">
+        <div class="w-16 h-16 rounded-full overflow-hidden border-2 border-gray-100 shadow-sm">
+            <img src="https://m.media-amazon.com/images/I/71S9O6Ojc6L._AC_UY1100_.jpg" class="w-full h-full object-cover">
+        </div>
+        <span class="text-[11px] font-bold mt-1 text-gray-700">Shirt</span>
+    </div>
+</div>
+
+<div id="products" class="grid grid-cols-2 gap-3 p-3"></div>
+
+<div id="orderBox" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl overflow-y-auto max-h-[90vh]">
+        <h2 class="text-xl font-black mb-2 text-red-600 border-b pb-2">Your Cart</h2>
+        <div id="cartItems" class="space-y-2 mb-4"></div>
+        <div class="border-t pt-2 mb-4">
+            <p class="flex justify-between font-bold">Total: <span id="total">0</span></p>
+        </div>
+        <div class="space-y-3">
+            <input id="cName" placeholder="आपका नाम" class="w-full p-3 bg-gray-50 border rounded-xl outline-none">
+            <input id="mobile" placeholder="मोबाइल नंबर" class="w-full p-3 bg-gray-50 border rounded-xl outline-none">
+            <textarea id="address" placeholder="पूरा पता" class="w-full p-3 bg-gray-50 border rounded-xl outline-none h-20"></textarea>
+        </div>
+        <div class="flex gap-2 mt-6">
+            <button onclick="document.getElementById('orderBox').classList.add('hidden')" class="flex-1 py-3 font-bold text-gray-500">Close</button>
+            <button onclick="submitOrder()" class="flex-1 py-3 bg-blue-600 text-white font-bold rounded-xl shadow-lg">Place Order</button>
+        </div>
+    </div>
+</div>
+
+<div id="quickOrderBox" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl overflow-y-auto max-h-[90vh]">
+        <h2 class="text-xl font-black mb-2 text-red-600 border-b pb-2 italic uppercase">Quick Order</h2>
+        <p id="selectedItemName" class="font-bold text-gray-700 mb-4 bg-gray-100 p-2 rounded-lg text-sm"></p>
+        <div class="space-y-3">
+            <input id="qName" placeholder="आपका नाम" class="w-full p-3 bg-gray-50 border rounded-xl outline-none">
+            <input id="qMobile" placeholder="मोबाइल नंबर" class="w-full p-3 bg-gray-50 border rounded-xl outline-none">
+            <div class="grid grid-cols-2 gap-2">
+                <input id="qSize" placeholder="Size (L, XL)" class="p-3 bg-gray-50 border rounded-xl outline-none">
+                <input id="qColor" placeholder="Color" class="p-3 bg-gray-50 border rounded-xl outline-none">
+            </div>
+            <textarea id="qAddress" placeholder="पूरा पता (Full Address)" class="w-full p-3 bg-gray-50 border rounded-xl outline-none h-20"></textarea>
+        </div>
+        <div class="flex gap-2 mt-6">
+            <button onclick="closeQuickOrder()" class="flex-1 py-3 font-bold text-gray-400">CANCEL</button>
+            <button onclick="confirmQuickOrder()" class="flex-1 py-3 bg-green-600 text-white font-bold rounded-xl shadow-lg border-b-4 border-green-800">CONFIRM ✅</button>
+        </div>
+    </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+<script>
 const firebaseConfig = {  
   apiKey: "YOUR_API_KEY",  
   authDomain: "nncart.firebaseapp.com",  
@@ -123,45 +142,61 @@ const SHEET_URL = "https://script.google.com/macros/s/AKfycbwQTRONnq_uDtFnXArJva
 let allProducts = [];  
 let cart = [];  
 let currentQuickItem = null;  
-  
+
+// 🔥 FIXED: Loads from both and merges by Barcode to avoid duplicates
 async function loadProducts() {  
   try {  
-    const snap = await db.collection("products").get();  
-    allProducts = snap.docs.map(doc => doc.data());  
-    renderProducts(allProducts);  
+    let combinedData = {};
+
+    // 1. Fetch from Google Sheet
+    try {
+        const sheetRes = await fetch(SHEET_URL + "?action=getInventory");
+        const sheetItems = await sheetRes.json();
+        sheetItems.forEach(item => { combinedData[item.Barcode] = item; });
+    } catch(e) { console.log("Sheet empty or error"); }
+
+    // 2. Fetch from Firebase
+    try {
+        const snap = await db.collection("products").get();
+        snap.forEach(doc => {
+            const data = doc.data();
+            if(!combinedData[data.Barcode]) { combinedData[data.Barcode] = data; }
+        });
+    } catch(e) { console.log("Firebase empty or error"); }
+
+    allProducts = Object.values(combinedData);
+    renderProducts(allProducts);
   } catch(e) { alert("❌ Load Error"); }  
 }  
   
 function renderProducts(list) {  
-            let html = "";   
-            const container = document.getElementById("products");  
-              
-            list.forEach(p => {  
-                // Key Mapping Fix: Sheet column 'Image' used here  
-                const imgUrl = p.Image || p["Image URL"] || 'https://via.placeholder.com/150';  
-                const pName = p.Name || p["Product Name"] || "No Name";  
-                const price = p.Price || 0;  
-                const mrp = p.MRP || (Number(price) + 100);  
-  
-                html += `  
-                <div class="bg-white p-2 rounded-2xl shadow-md flex flex-col border border-gray-100">  
-                    <img src="${imgUrl}" class="h-28 w-full object-cover rounded-xl" onerror="this.src='https://via.placeholder.com/150?text=No+Image'">  
-                    <div class="flex text-[#FFD700] text-[8px] mt-1">  
-                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i>  
-                    </div>  
-                    <h3 class="text-[11px] font-bold mt-1 truncate">${pName}</h3>  
-                    <div class="flex gap-2 items-center">  
-                        <p class="text-red-600 font-black text-sm">₹${price}</p>  
-                        <p class="text-gray-400 line-through text-[10px]">₹${mrp}</p>  
-                    </div>  
-                    <div class="grid grid-cols-2 gap-1 mt-2">  
-                        <button onclick='addToCart(${JSON.stringify(p)})' class="bg-gray-100 text-black text-[10px] p-2 rounded-lg font-bold shadow-sm">+ Cart</button>  
-                        <button onclick='openQuickOrder(${JSON.stringify(p)})' class="bg-[#FFD700] text-black text-[10px] p-2 rounded-lg font-bold shadow-sm">BUY NOW</button>  
-                    </div>  
-                </div>`;  
-            });  
-            container.innerHTML = html;  
-        }  
+    let html = "";   
+    const container = document.getElementById("products");  
+    list.forEach(p => {  
+        const imgUrl = p.Image || p.image || p["Image URL"] || 'https://via.placeholder.com/150';  
+        const pName = p.Name || p["Product Name"] || "No Name";  
+        const price = p.Price || 0;  
+        const mrp = p.MRP || (Number(price) + 100);  
+
+        html += `  
+        <div class="bg-white p-2 rounded-2xl shadow-md flex flex-col border border-gray-100">  
+            <img src="${imgUrl}" class="h-28 w-full object-cover rounded-xl" onerror="this.src='https://via.placeholder.com/150?text=No+Image'">  
+            <div class="flex text-[#FFD700] text-[8px] mt-1">  
+                <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i>  
+            </div>  
+            <h3 class="text-[11px] font-bold mt-1 truncate">${pName}</h3>  
+            <div class="flex gap-2 items-center">  
+                <p class="text-red-600 font-black text-sm">₹${price}</p>  
+                <p class="text-gray-400 line-through text-[10px]">₹${mrp}</p>  
+            </div>  
+            <div class="grid grid-cols-2 gap-1 mt-2">  
+                <button onclick='addToCart(${JSON.stringify(p)})' class="bg-gray-100 text-black text-[10px] p-2 rounded-lg font-bold shadow-sm">+ Cart</button>  
+                <button onclick='openQuickOrder(${JSON.stringify(p)})' class="bg-[#FFD700] text-black text-[10px] p-2 rounded-lg font-bold shadow-sm">BUY NOW</button>  
+            </div>  
+        </div>`;  
+    });  
+    container.innerHTML = html;  
+}  
   
 function searchProduct() {  
   const v = document.getElementById("search").value.toLowerCase();  
@@ -202,6 +237,7 @@ function openQuickOrder(p) {
   
 function closeQuickOrder() { document.getElementById("quickOrderBox").classList.add("hidden"); }  
   
+// 🔥 FIXED: Decreases stock in both Sheet and Firebase
 async function confirmQuickOrder() {  
     const data = {  
         "Customer Name": qName.value,  
@@ -209,6 +245,7 @@ async function confirmQuickOrder() {
         "Address": qAddress.value,  
         "Products": (currentQuickItem["Product Name"] || currentQuickItem.Name),  
         "Total": currentQuickItem.Price,  
+        "Barcode": currentQuickItem.Barcode,
         "Status": "Pending"  
     };  
     await submitLogic(data);  
@@ -217,14 +254,32 @@ async function confirmQuickOrder() {
   
 async function submitLogic(data) {  
     try {  
+        // 1. Order to Firebase
         await db.collection("orders").add(data);  
-        await fetch(SHEET_URL + "?action=placeOrder", { method: "POST", body: JSON.stringify(data) });  
-        alert("Order Success ✅");  
+        
+        // 2. Order to Sheet & Stock Update in Sheet
+        await fetch(SHEET_URL, { 
+            method: "POST", 
+            body: JSON.stringify({ action: "placeOrder", ...data }) 
+        });
+        await fetch(SHEET_URL + `?action=updateStock&barcode=${data.Barcode}&qty=1`);
+
+        // 3. Stock Update in Firebase
+        const fbSnap = await db.collection("products").where("Barcode", "==", data.Barcode).get();
+        fbSnap.forEach(doc => {
+            let newStock = (doc.data().Stock || 1) - 1;
+            doc.ref.update({ Stock: newStock });
+        });
+
+        alert("Order Success ✅ Stock Updated");  
+        loadProducts(); 
     } catch(e) { alert("Error ❌"); }  
 }  
   
 loadProducts();  
-</script>  <footer class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 flex justify-around py-3 z-[100]">  
+</script>
+
+<footer class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 flex justify-around py-3 z-[100]">  
     <button onclick="location.reload()" class="flex flex-col items-center text-red-600">  
         <i class="fa-solid fa-house text-xl"></i>  
         <span class="text-[10px] font-bold mt-1">HOME</span>  
@@ -241,5 +296,6 @@ loadProducts();
         <i class="fa-solid fa-user text-xl"></i>  
         <span class="text-[10px] font-bold mt-1">ACCOUNT</span>  
     </button>  
-</footer>  </body>  
-</html> 
+</footer>  
+</body>  
+</html>
