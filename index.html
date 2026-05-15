@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#FF0000">
-<title>NnCart Full Fixed</title>
+<title>NnCart Full Fixed & Fast</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
@@ -143,61 +143,52 @@ let allProducts = [];
 let cart = [];  
 let currentQuickItem = null;  
 
-// 🔥 FIXED: Hybrid Loading with Duplicate Check by Barcode
+// 🔥 FIXED & OPTIMIZED: Parallel Super-Fast Loading
 async function loadProducts() {  
+  const container = document.getElementById("products");
+  container.innerHTML = "<p class='text-center w-full col-span-2 py-10 text-gray-500 font-bold'>Loading Products...</p>";
+
   try {  
-    let combinedData = {}; // Duplicate hatane ke liye object
+    let combinedData = {}; 
 
-    // 1. Google Sheet se data mangwana
-    try {
-        console.log("Sheet se data aa raha hai...");
-        const sheetRes = await fetch(SHEET_URL + "?action=getinventory");
-        const sheetItems = await sheetRes.json();
-        
-        if(sheetItems && sheetItems.length > 0) {
-            sheetItems.forEach(item => { 
-                if(item.Barcode) {
-                    combinedData[item.Barcode] = item; // Barcode ko ID ki tarah use kar rahe hain
-                }
-            });
+    // Both network requests run in parallel now
+    const [sheetItems, firebaseItems] = await Promise.all([
+        fetch(SHEET_URL + "?action=getInventory").then(res => res.json()).catch(e => { console.log("Sheet fetch error:", e); return []; }),
+        db.collection("products").get().then(snap => snap.docs.map(doc => doc.data())).catch(e => { console.log("Firebase fetch error:", e); return []; })
+    ]);
+
+    // 1. Populate Firebase items first
+    firebaseItems.forEach(item => {
+        if(item.Barcode) {
+            combinedData[item.Barcode] = item;
         }
-    } catch(e) { console.log("Sheet Khali hai ya Link galat hai: " + e); }
+    });
 
-    // 2. Firebase se data mangwana
-    try {
-        console.log("Firebase se data aa raha hai...");
-        const snap = await db.collection("products").get();
-        snap.forEach(doc => {
-            const data = doc.data();
-            // Agar barcode sheet mein nahi hai, tabhi ise add karenge
-            if(data.Barcode && !combinedData[data.Barcode]) { 
-                combinedData[data.Barcode] = data; 
-            }
-        });
-    } catch(e) { console.log("Firebase error: " + e); }
+    // 2. Override/Add Sheet items (Fixed case-sensitivity from getinventory to getInventory)
+    sheetItems.forEach(item => { 
+        if(item.Barcode) {
+            combinedData[item.Barcode] = item; 
+        }
+    });
 
-    // 3. Object ko wapas List (Array) mein badalna
     allProducts = Object.values(combinedData);
 
-    // 4. Screen par dikhana
     if (allProducts.length > 0) {
         renderProducts(allProducts);
     } else {
-        document.getElementById("products").innerHTML = "<p class='text-center w-full col-span-2 py-10 text-gray-400'>Koi product nahi mila!</p>";
+        container.innerHTML = "<p class='text-center w-full col-span-2 py-10 text-gray-400'>Koi product nahi mila!</p>";
     }
 
   } catch(e) { 
       console.error(e);
-      alert("❌ Load Error: Check Console"); 
+      container.innerHTML = "<p class='text-center w-full col-span-2 py-10 text-red-500'>❌ Load Error. Try Refreshing.</p>";
   }  
 }
 
-  
 function renderProducts(list) {  
     let html = "";   
     const container = document.getElementById("products");  
     list.forEach(p => {  
-        // Mapping fix according to your screenshot columns
         const imgUrl = p.Image || p.image || p["Image URL"] || 'https://via.placeholder.com/150';  
         const pName = p.Name || p["Product Name"] || "No Name";  
         const price = p.Price || 0;  
