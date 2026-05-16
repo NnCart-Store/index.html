@@ -59,25 +59,25 @@ img { background:#eee; min-height: 100px; }
 </div>
 
 <div class="flex gap-4 overflow-x-auto no-scrollbar p-4 bg-white">
-    <div onclick="filterByCategory('Saree')" class="flex flex-col items-center min-w-[70px]">
+    <div onclick="filterByCategory('Saree')" class="flex flex-col items-center min-w-[70px] cursor-pointer">
         <div class="w-16 h-16 rounded-full overflow-hidden border-2 border-gray-100 shadow-sm">
             <img src="https://m.media-amazon.com/images/I/71z3uD+6clL._AC_UY1100_.jpg" class="w-full h-full object-cover">
         </div>
         <span class="text-[11px] font-bold mt-1 text-gray-700">Shari</span>
     </div>
-    <div onclick="filterByCategory('Kurti')" class="flex flex-col items-center min-w-[70px]">
+    <div onclick="filterByCategory('Kurti')" class="flex flex-col items-center min-w-[70px] cursor-pointer">
         <div class="w-16 h-16 rounded-full overflow-hidden border-2 border-gray-100 shadow-sm">
             <img src="https://m.media-amazon.com/images/I/61vI80lYv+L._AC_UY1100_.jpg" class="w-full h-full object-cover">
         </div>
         <span class="text-[11px] font-bold mt-1 text-gray-700">Kurti</span>
     </div>
-    <div onclick="filterByCategory('Jeans')" class="flex flex-col items-center min-w-[70px]">
+    <div onclick="filterByCategory('Jeans')" class="flex flex-col items-center min-w-[70px] cursor-pointer">
         <div class="w-16 h-16 rounded-full overflow-hidden border-2 border-gray-100 shadow-sm">
             <img src="https://5.imimg.com/data5/ANDROID/Default/2021/1/WA/TC/ZZ/27725946/product-500x500.jpg" class="w-full h-full object-cover">
         </div>
         <span class="text-[11px] font-bold mt-1 text-gray-700">Jeans</span>
     </div>
-    <div onclick="filterByCategory('Shirt')" class="flex flex-col items-center min-w-[70px]">
+    <div onclick="filterByCategory('Shirt')" class="flex flex-col items-center min-w-[70px] cursor-pointer">
         <div class="w-16 h-16 rounded-full overflow-hidden border-2 border-gray-100 shadow-sm">
             <img src="https://m.media-amazon.com/images/I/71S9O6Ojc6L._AC_UY1100_.jpg" class="w-full h-full object-cover">
         </div>
@@ -143,7 +143,7 @@ let allProducts = [];
 let cart = [];  
 let currentQuickItem = null;  
 
-// 🔥 FIXED & OPTIMIZED: Parallel Super-Fast Loading
+// 🔥 FIXED: Data Merge Layer & Object Structure Mapping
 async function loadProducts() {  
   const container = document.getElementById("products");
   container.innerHTML = "<p class='text-center w-full col-span-2 py-10 text-gray-500 font-bold'>Loading Products...</p>";
@@ -151,25 +151,27 @@ async function loadProducts() {
   try {  
     let combinedData = {}; 
 
-    // Both network requests run in parallel now
-    const [sheetItems, firebaseItems] = await Promise.all([
-        fetch(SHEET_URL + "?action=getInventory").then(res => res.json()).catch(e => { console.log("Sheet fetch error:", e); return []; }),
+    const [sheetResponse, firebaseItems] = await Promise.all([
+        fetch(SHEET_URL + "?action=getInventory").then(res => res.json()).catch(e => { console.log("Sheet fetch error:", e); return null; }),
         db.collection("products").get().then(snap => snap.docs.map(doc => doc.data())).catch(e => { console.log("Firebase fetch error:", e); return []; })
     ]);
 
-    // 1. Populate Firebase items first
+    // 1. Firebase items register karein
     firebaseItems.forEach(item => {
-        if(item.Barcode) {
-            combinedData[item.Barcode] = item;
-        }
+        const barcode = item.Barcode || item.barcode;
+        if(barcode) { combinedData[barcode] = item; }
     });
 
-    // 2. Override/Add Sheet items (Fixed case-sensitivity from getinventory to getInventory)
-    sheetItems.forEach(item => { 
-        if(item.Barcode) {
-            combinedData[item.Barcode] = item; 
-        }
-    });
+    // 2. FIXED: Sheet Items extract from sheetResponse.data
+    if (sheetResponse && sheetResponse.status === "success" && Array.isArray(sheetResponse.data)) {
+        sheetResponse.data.forEach(item => { 
+            const barcode = item.Barcode || item.barcode;
+            if(barcode) {
+                // Merge strategies: Sheet data overrides or updates firebase base
+                combinedData[barcode] = Object.assign({}, combinedData[barcode] || {}, item); 
+            }
+        });
+    }
 
     allProducts = Object.values(combinedData);
 
@@ -185,14 +187,17 @@ async function loadProducts() {
   }  
 }
 
+// FIXED: String escaping issues in onclick arguments
 function renderProducts(list) {  
     let html = "";   
     const container = document.getElementById("products");  
-    list.forEach(p => {  
-        const imgUrl = p.Image || p.image || p["Image URL"] || 'https://via.placeholder.com/150';  
+    
+    list.forEach((p, idx) => {  
+        const imgUrl = p["Image URL"] || p.Image || p.image || 'https://via.placeholder.com/150';  
         const pName = p.Name || p["Product Name"] || "No Name";  
         const price = p.Price || 0;  
         const mrp = p.MRP || (Number(price) + 150);  
+        const barcode = p.Barcode || p.barcode || "";
 
         html += `  
         <div class="bg-white p-2 rounded-2xl shadow-md flex flex-col border border-gray-100">  
@@ -206,13 +211,17 @@ function renderProducts(list) {
                 <p class="text-gray-400 line-through text-[10px]">₹${mrp}</p>  
             </div>  
             <div class="grid grid-cols-2 gap-1 mt-2">  
-                <button onclick='addToCart(${JSON.stringify(p)})' class="bg-gray-100 text-black text-[10px] p-2 rounded-lg font-bold shadow-sm">+ Cart</button>  
-                <button onclick='openQuickOrder(${JSON.stringify(p)})' class="bg-[#FFD700] text-black text-[10px] p-2 rounded-lg font-bold shadow-sm">BUY NOW</button>  
+                <button onclick="handleAddToCart(${idx})" class="bg-gray-100 text-black text-[10px] p-2 rounded-lg font-bold shadow-sm">+ Cart</button>  
+                <button onclick="handleQuickOrder(${idx})" class="bg-[#FFD700] text-black text-[10px] p-2 rounded-lg font-bold shadow-sm">BUY NOW</button>  
             </div>  
         </div>`;  
     });  
     container.innerHTML = html;  
 }  
+
+// Global helpers to avoid dynamic inline stringify breaking syntax
+window.handleAddToCart = function(idx) { addToCart(allProducts[idx]); };
+window.handleQuickOrder = function(idx) { openQuickOrder(allProducts[idx]); };
   
 function searchProduct() {  
   const v = document.getElementById("search").value.toLowerCase();  
@@ -221,7 +230,7 @@ function searchProduct() {
 }  
   
 function filterByCategory(cat) {  
-  const filtered = allProducts.filter(p => (p.Category || "").toLowerCase() === cat.toLowerCase());  
+  const filtered = allProducts.filter(p => (p.Category || p.category || "").toLowerCase() === cat.toLowerCase());  
   renderProducts(filtered);  
 }  
   
@@ -255,45 +264,56 @@ function openQuickOrder(p) {
 function closeQuickOrder() { document.getElementById("quickOrderBox").classList.add("hidden"); }  
   
 async function confirmQuickOrder() {  
+    const barcodeVal = currentQuickItem.Barcode || currentQuickItem.barcode || "";
     const data = {  
-        "Customer Name": qName.value,  
-        "Mobile": qMobile.value,  
-        "Address": qAddress.value,  
+        "Customer Name": document.getElementById("qName").value,  
+        "Mobile": document.getElementById("qMobile").value,  
+        "Address": document.getElementById("qAddress").value,  
         "Products": (currentQuickItem.Name || currentQuickItem["Product Name"]),  
         "Total": currentQuickItem.Price,  
-        "Barcode": currentQuickItem.Barcode,
-        "Size": qSize.value,
-        "Color": qColor.value,
+        "Barcode": barcodeVal,
+        "Size": document.getElementById("qSize").value,
+        "Color": document.getElementById("qColor").value,
         "Status": "Pending"  
     };  
     await submitLogic(data);  
     closeQuickOrder();  
 }  
   
+// FIXED: CORS handle and Redirect support for Google Scripts POST
 async function submitLogic(data) {  
     try {  
         // 1. Save Order to Firebase
         await db.collection("orders").add(data);  
         
-        // 2. Save Order to Sheet
+        // 2. Save Order to Sheet (Fixed using Text encoding workaround for standard web apps)
         await fetch(SHEET_URL, { 
-            method: "POST", 
+            method: "POST",
+            mode: "no-cors",
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ action: "placeOrder", ...data }) 
         });
 
-        // 3. Update Stock in Sheet
-        await fetch(SHEET_URL + `?action=updateStock&barcode=${data.Barcode}&qty=1`);
+        const barcodeParam = data.Barcode;
+        if(barcodeParam) {
+            // 3. Update Stock in Sheet
+            await fetch(SHEET_URL + `?action=updateStock&barcode=${encodeURIComponent(barcodeParam)}&qty=1`, { mode: "no-cors" });
 
-        // 4. Update Stock in Firebase
-        const fbSnap = await db.collection("products").where("Barcode", "==", data.Barcode).get();
-        fbSnap.forEach(doc => {
-            let newStock = (parseInt(doc.data().Stock) || 1) - 1;
-            doc.ref.update({ Stock: newStock });
-        });
+            // 4. Update Stock in Firebase
+            const fbSnap = await db.collection("products").where("Barcode", "==", barcodeParam).get();
+            fbSnap.forEach(doc => {
+                let currentStock = parseInt(doc.data().Stock || doc.data().stock) || 1;
+                let newStock = currentStock - 1;
+                doc.ref.update({ Stock: newStock });
+            });
+        }
 
         alert("Order Success ✅ Stock Updated");  
         loadProducts(); 
-    } catch(e) { alert("Error ❌"); }  
+    } catch(e) { 
+        console.error(e);
+        alert("Error ❌"); 
+    }  
 }  
   
 loadProducts();  
